@@ -31,5 +31,9 @@ def check_ssl_expiry(url: str, timeout: float = 3.0) -> Optional[int]:
                 now = datetime.now(timezone.utc)
                 remaining = (expire_date - now).days
                 return max(0, remaining)
+    except ssl.SSLCertVerificationError as e:
+        if "expired" in str(e).lower():
+            return 0
+        return None
     except Exception:
         return None

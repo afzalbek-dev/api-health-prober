@@ -54,11 +54,17 @@ class TestHealthProber(unittest.TestCase):
                     expected_status=200,
                     check_ssl=False,
                 ),
+                EndpointConfig(
+                    name="Expected 404 Route",
+                    url=f"http://127.0.0.1:{self.port}/not-found",
+                    expected_status=404,
+                    check_ssl=False,
+                ),
             ]
 
             summary = await prober.probe_all(endpoints)
-            self.assertEqual(summary.total_endpoints, 2)
-            self.assertEqual(summary.healthy_count, 1)
+            self.assertEqual(summary.total_endpoints, 3)
+            self.assertEqual(summary.healthy_count, 2)
             self.assertEqual(summary.unhealthy_count, 1)
             self.assertFalse(summary.is_all_healthy)
 

@@ -48,7 +48,17 @@ class HealthProber:
                     error_msg = f"Expected status {config.expected_status}, got {code}"
             except urllib.error.HTTPError as e:
                 status_code = e.code
-                error_msg = f"HTTP Error {e.code}"
+                body = e.read().decode("utf-8", errors="ignore")
+                if e.code == config.expected_status:
+                    if config.keyword_assertion:
+                        if config.keyword_assertion in body:
+                            is_healthy = True
+                        else:
+                            error_msg = f"Keyword '{config.keyword_assertion}' not found in body"
+                    else:
+                        is_healthy = True
+                else:
+                    error_msg = f"Expected status {config.expected_status}, got {e.code}"
             except Exception as e:
                 error_msg = str(e)
 
